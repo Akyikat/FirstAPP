@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,32 +9,39 @@
     tools:context=".MainActivity"
     android:gravity="center">
 
-
-     <TextView
+    <TextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:layout_gravity="center"
-       />
+        android:text="Calculator"
+        android:layout_gravity="center" />
 
-     <EditText
-        android:id="@+id/edit_text"
+    <EditText
+        android:id="@+id/first_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ввведите любую фразу"/>
+        android:hint="Ввведите первое значение"
+        android:inputType="number"/>
 
-     <EditText
-        android:id="@+id/edit_text2"
+    <EditText
+        android:id="@+id/second_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ввведите любую цифру"/>
+        android:hint="Ввведите второе значение"
+        android:inputType="number"/>
 
-     <Button
-        android:id="@+id/change"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Заменить"/>
-     <Button
-         android:layout_width="wrap_content"
-         android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"/>
+
+    <Button
+        android:layout_marginTop="8dp"
+        android:id="@+id/button_plus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сложить"/>
+
+    </LinearLayout>
+
