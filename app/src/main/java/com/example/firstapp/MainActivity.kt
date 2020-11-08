@@ -1,87 +1,63 @@
 package com.example.firstapp
 
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
-import android.os.Message
-import android.util.Log
-import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    var textArray = mutableListOf<String>()
+    var text: String? = null
+    var array = mutableListOf<String>()
+    var toast: Toast? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addToArray()
-        removeFromArray()
+        getValueAction()
+        showArrayAction()
     }
 
-     //textChangedListener
+    private fun getValueAction() {
+        btnShow.setOnClickListener {
+            text = edText.text.toString()
 
-    private fun addToArray(){
-        btnAdd.setOnClickListener {
-            val value = edText.text.toString()
-            if (value.isBlank() || value.isEmpty()) {
+            if (text!!.isEmpty() || text!!.isBlank()) {
+                showToast("Поле не должно быть пустым")
                 edText.text.clear()
-                Toast.makeText(this, "Нельзя добавить пустое значение", Toast.LENGTH_LONG).show()
-            } else if (edText.length() <= 3){
+            }else{
+                array.add("$text")
+
+                val intent = Intent(this, SecondActivity::class.java)
+                intent.putExtra("text", text)
                 edText.text.clear()
-                Toast.makeText(this, "Значение должно быть больше 3-х символов.", Toast.LENGTH_LONG).show()
-            } else {
-                edText.text.clear()
-                textArray.add(value)
-                displayArray()
+
+                startActivity(intent)
             }
         }
     }
 
-    private fun removeFromArray(){
-        btnRemove.setOnClickListener {
-            val value = edText.text.toString()
-            if (value.isBlank() || value.isEmpty()) {
-                edText.text.clear()
-                Toast.makeText(this, "Введите значение", Toast.LENGTH_LONG).show()
-            } else {
-                edText.text.clear()
-                findAndRemoveFromArray(value)
-                displayArray()
+    private fun showArrayAction() {
+        btnShowAllValues.setOnClickListener {
+            var list = ""
+            array.forEach{
+                list = if (list.isEmpty()) {
+                    "$it"
+                }  else  {
+                    "$list $it \n"
+                }
+                showToast(list)
             }
         }
     }
 
-    private fun findAndRemoveFromArray(value: String) {
-        var indexOfArray: Int? = null
-        var elements = ""
-        for((i,text) in textArray.withIndex()){
-            if (text == value) {
-                indexOfArray = i
-                elements = text
-            } else {
-                Toast.makeText(this, "Элемент для удаления не найден", Toast.LENGTH_LONG).show()
-            }
-        }
-        if(indexOfArray != null){
-            textArray.removeAt(indexOfArray)
-            Toast.makeText(this, "$elements удален", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun displayArray() {
-        var result = ""
-        for(list in textArray){
-            result = "$result $list \n"
-        }
-        tvList.text = result
+    @SuppressLint("ShowToast")
+    private fun showToast(message: String) {
+        if (toast != null) toast?.cancel()
+        toast = Toast.makeText(this, "", Toast.LENGTH_LONG)
+        toast?.show()
     }
 }
-
-
-// Что такое переменная? - ячейка памяти для хранения информации
-// int, boolean, string, float, char
-
-
-//github, gitlab - vcs - version control code
