@@ -3,61 +3,158 @@ package com.example.firstapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
-    var text: String? = null
-    var array = mutableListOf<String>()
-    var toast: Toast? = null
+    private var enteredNumber: Float = 0.0f
+    private var operand = ""
+    private var default = ""
+    private var lastNumber = ""
+    private val decimalArrayButtons = mutableListOf<Button>()
+    private val operandArrayButtons = mutableListOf<Button>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getValueAction()
-        showArrayAction()
+        btnDelete()
+        btnReset()
+        btnEqual()
+
+        setDecimalButtonsToArray()
+        setDecimalButtons()
+
+        setOperandButtonsToArray()
+        setOperandButtons()
     }
 
-    private fun getValueAction() {
-        btnShow.setOnClickListener {
-            text = edText.text.toString()
+    private fun setDecimalButtonsToArray() {
+        decimalArrayButtons.apply {
+            add(btn0)
+            add(btn1)
+            add(btn2)
+            add(btn3)
+            add(btn4)
+            add(btn5)
+            add(btn6)
+            add(btn7)
+            add(btn8)
+            add(btn9)
+            add(btnPoint)
+        }
+    }
 
-            if (text!!.isEmpty() || text!!.isBlank()) {
-                showToast("Поле не должно быть пустым")
-                edText.text.clear()
-            }else{
-                array.add("$text")
+    private fun setOperandButtonsToArray() {
+        operandArrayButtons.apply {
+            add(btnPlus)
+            add(btnMinus)
+            add(btnPow)
+            add(btnDivide)
+        }
+    }
 
-                val intent = Intent(this, SecondActivity::class.java)
-                intent.putExtra("text", text)
-                edText.text.clear()
-
-                startActivity(intent)
+    private fun setDecimalButtons() {
+        for (btn in decimalArrayButtons) {
+            btn.setOnClickListener {
+                default = tvProcess.text.toString()
+                default += btn.text
+                lastNumber += btn.text
+                tvProcess.text = default
             }
         }
     }
 
-    private fun showArrayAction() {
-        btnShowAllValues.setOnClickListener {
-            var list = ""
-            array.forEach{
-                list = if (list.isEmpty()) {
-                    "$it"
-                }  else  {
-                    "$list $it \n"
+    private fun setOperandButtons() {
+        for (btn in operandArrayButtons) {
+            btn.setOnClickListener {
+                getOperandAction(btn.text as String)
+            }
+        }
+    }
+
+    private fun getOperandAction(type: String) {
+        var text = tvProcess.text.toString()
+        if (text.isNullOrEmpty()) {
+            return
+        }
+        default = tvProcess.text.toString()
+        if (isDecimal(default.last())) {
+            if (enteredNumber == 0.0f) enteredNumber += lastNumber.toFloat()
+            lastNumber = ""
+        } else {
+            default = default.dropLast(1)
+        }
+        default += type
+        if (tvProcess.text.isEmpty()) {
+            tvResult.text = default
+            tvProcess.text = ""
+        } else tvProcess.text = default
+        operand = type
+    }
+
+    private fun btnDelete() {
+        btnDelete.setOnClickListener {
+            if (default.isNotEmpty()) {
+                default = default.dropLast(1)
+                tvProcess.text = default
+            }
+        }
+    }
+
+
+    private fun btnReset() {
+        btnReset.setOnClickListener {
+            enteredNumber = 0.0f
+            lastNumber = ""
+            tvProcess.text = ""
+            tvResult.text = ""
+        }
+    }
+
+    private fun btnEqual() {
+        btnEqual.setOnClickListener {
+            when (operand) {
+                "×" -> {
+                    enteredNumber *= lastNumber.toFloat()
                 }
-                showToast(list)
+                "÷" -> {
+                    enteredNumber /= lastNumber.toFloat()
+                }
+                "+" -> {
+                    enteredNumber += lastNumber.toFloat()
+                }
+                "–" -> {
+                    enteredNumber -= lastNumber.toFloat()
+                }
             }
+            getResultAction()
         }
     }
 
-    @SuppressLint("ShowToast")
-    private fun showToast(message: String) {
-        if (toast != null) toast?.cancel()
-        toast = Toast.makeText(this, "", Toast.LENGTH_LONG)
-        toast?.show()
+    private fun getResultAction() {
+        if (enteredNumber % 1 == 0.0f) {
+            tvResult.text = enteredNumber.roundToInt().toString()
+            tvProcess.text = enteredNumber.roundToInt().toString()
+
+        } else {
+            tvProcess.text = String.format("%.2f", enteredNumber)
+            tvResult.text = String.format("%.2f", enteredNumber)
+        }
+        lastNumber = ""
+    }
+
+    private fun isDecimal(last: Char): Boolean {
+        val charArray = mutableListOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+
+        for (char in charArray) {
+            if (last == char) return true
+        }
+        return false
     }
 }

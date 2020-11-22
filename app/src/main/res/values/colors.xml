@@ -6,5 +6,8 @@
     <color name="changeButtonText">#B847E8</color>
     <color name="colorRed">#C5363B</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorBlack">#17181F</color>
+    <color name="colorBlack">#001</color>
+    <color name="colorGraphite">#20000000</color>
+    <color name="colorGrey">#8A8A8A</color>
+    <color name="colorOrange">#FF9800</color>
     </resources>
