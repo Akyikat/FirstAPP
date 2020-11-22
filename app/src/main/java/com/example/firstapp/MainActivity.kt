@@ -3,10 +3,12 @@ package com.example.firstapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.ArrayList
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
@@ -17,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     private var lastNumber = ""
     private val decimalArrayButtons = mutableListOf<Button>()
     private val operandArrayButtons = mutableListOf<Button>()
-
+    private var equalsArrayList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +34,28 @@ class MainActivity : AppCompatActivity() {
 
         setOperandButtonsToArray()
         setOperandButtons()
+
+        btnNextActivityAction()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+
+        outState.putFloat("enteredNumber", enteredNumber)
+        outState.putString("operand", operand)
+        outState.putString("default", default)
+        outState.putString("lastNumber", lastNumber)
+        outState.putStringArrayList("equalsArrayList", equalsArrayList as ArrayList<String>)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        enteredNumber = savedInstanceState.getFloat("enteredNumber")
+        operand = savedInstanceState.getString("operand").toString()
+        default = savedInstanceState.getString("default").toString()
+        lastNumber = savedInstanceState.getString("lastNumber").toString()
+        equalsArrayList = savedInstanceState.getStringArrayList(("equalsArrayList").toString())!!
     }
 
     private fun setDecimalButtonsToArray() {
@@ -133,19 +157,20 @@ class MainActivity : AppCompatActivity() {
                     enteredNumber -= lastNumber.toFloat()
                 }
             }
-            getResultAction()
+            displayResult()
         }
     }
 
-    private fun getResultAction() {
+    private fun displayResult() {
         if (enteredNumber % 1 == 0.0f) {
             tvResult.text = enteredNumber.roundToInt().toString()
             tvProcess.text = enteredNumber.roundToInt().toString()
-
         } else {
             tvProcess.text = String.format("%.2f", enteredNumber)
             tvResult.text = String.format("%.2f", enteredNumber)
         }
+        var result = tvResult.text.toString()
+        equalsArrayList.add(result)
         lastNumber = ""
     }
 
@@ -156,5 +181,13 @@ class MainActivity : AppCompatActivity() {
             if (last == char) return true
         }
         return false
+    }
+
+    private fun btnNextActivityAction() {
+        btnNextActivity.setOnClickListener {
+            val intent = Intent(this, ListOfEquals::class.java)
+            intent.putStringArrayListExtra("list", equalsArrayList as ArrayList<String>)
+            startActivity(intent)
+        }
     }
 }
